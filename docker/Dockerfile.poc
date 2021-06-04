@@ -3,5 +3,3 @@ FROM mustafahusain/hyperledger-areas-agent:latest
 # Add Agent file
 COPY runner/crowdpoint.py ./demo/runners/crowdpoint.py
 COPY runner/faber.py ./demo/runners/faber.py
-
-#
