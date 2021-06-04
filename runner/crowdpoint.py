@@ -41,7 +41,7 @@ logging.basicConfig(level=logging.WARNING)
 LOGGER = logging.getLogger(__name__)
 
 
-class FaberAgent(AriesAgent):
+class CrowdpointAgent(AriesAgent):
     def __init__(
         self,
         ident: str,
@@ -54,7 +54,7 @@ class FaberAgent(AriesAgent):
             ident,
             http_port,
             admin_port,
-            prefix="Faber",
+            prefix="Crowdpoint",
             no_auto=no_auto,
             **kwargs,
         )
@@ -140,41 +140,41 @@ class FaberAgent(AriesAgent):
 
 
 async def main(args):
-    faber_agent = await create_agent_with_args(args, ident="faber")
+    crowdpoint_agent = await create_agent_with_args(args, ident="crowdpoint")
 
     try:
         log_status(
             "#1 Provision an agent and wallet, get back configuration details"
             + (
-                f" (Wallet type: {faber_agent.wallet_type})"
-                if faber_agent.wallet_type
+                f" (Wallet type: {crowdpoint_agent.wallet_type})"
+                if crowdpoint_agent.wallet_type
                 else ""
             )
         )
-        agent = FaberAgent(
-            "faber.agent",
-            faber_agent.start_port,
-            faber_agent.start_port + 1,
-            genesis_data=faber_agent.genesis_txns,
-            no_auto=faber_agent.no_auto,
-            tails_server_base_url=faber_agent.tails_server_base_url,
-            timing=faber_agent.show_timing,
-            multitenant=faber_agent.multitenant,
-            mediation=faber_agent.mediation,
-            wallet_type=faber_agent.wallet_type,
+        agent = CrowdpointAgent(
+            "crowdpoint.agent",
+            crowdpoint_agent.start_port,
+            crowdpoint_agent.start_port + 1,
+            genesis_data=crowdpoint_agent.genesis_txns,
+            no_auto=crowdpoint_agent.no_auto,
+            tails_server_base_url=crowdpoint_agent.tails_server_base_url,
+            timing=crowdpoint_agent.show_timing,
+            multitenant=crowdpoint_agent.multitenant,
+            mediation=crowdpoint_agent.mediation,
+            wallet_type=crowdpoint_agent.wallet_type,
         )
 
-        faber_agent.public_did = True
-        faber_schema_name = "degree schema"
-        faber_schema_attrs = ["name", "date", "degree", "age", "timestamp"]
-        await faber_agent.initialize(
+        crowdpoint_agent.public_did = True
+        crowdpoint_schema_name = "degree schema"
+        crowdpoint_schema_attrs = ["name", "date", "degree", "age", "timestamp"]
+        await crowdpoint_agent.initialize(
             the_agent=agent,
-            schema_name=faber_schema_name,
-            schema_attrs=faber_schema_attrs,
+            schema_name=crowdpoint_schema_name,
+            schema_attrs=crowdpoint_schema_attrs,
         )
 
         # generate an invitation for Alice
-        await faber_agent.generate_invitation(display_qr=True, wait=True)
+        await crowdpoint_agent.generate_invitation(display_qr=True, wait=True)
 
         exchange_tracing = False
         options = (
@@ -183,14 +183,14 @@ async def main(args):
             "    (3) Send Message\n"
             "    (4) Create New Invitation\n"
         )
-        if faber_agent.revocation:
+        if crowdpoint_agent.revocation:
             options += "    (5) Revoke Credential\n" "    (6) Publish Revocations\n"
-        if faber_agent.multitenant:
+        if crowdpoint_agent.multitenant:
             options += "    (W) Create and/or Enable Wallet\n"
         options += "    (T) Toggle tracing on credential/proof exchange\n"
         options += "    (X) Exit?\n[1/2/3/4/{}{}T/X] ".format(
-            "5/6/" if faber_agent.revocation else "",
-            "W/" if faber_agent.multitenant else "",
+            "5/6/" if crowdpoint_agent.revocation else "",
+            "W/" if crowdpoint_agent.multitenant else "",
         )
         async for option in prompt_loop(options):
             if option is not None:
@@ -199,31 +199,31 @@ async def main(args):
             if option is None or option in "xX":
                 break
 
-            elif option in "wW" and faber_agent.multitenant:
+            elif option in "wW" and crowdpoint_agent.multitenant:
                 target_wallet_name = await prompt("Enter wallet name: ")
                 include_subwallet_webhook = await prompt(
                     "(Y/N) Create sub-wallet webhook target: "
                 )
                 if include_subwallet_webhook.lower() == "y":
-                    created = await faber_agent.agent.register_or_switch_wallet(
+                    created = await crowdpoint_agent.agent.register_or_switch_wallet(
                         target_wallet_name,
-                        webhook_port=faber_agent.agent.get_new_webhook_port(),
+                        webhook_port=crowdpoint_agent.agent.get_new_webhook_port(),
                         public_did=True,
-                        mediator_agent=faber_agent.mediator_agent,
+                        mediator_agent=crowdpoint_agent.mediator_agent,
                     )
                 else:
-                    created = await faber_agent.agent.register_or_switch_wallet(
+                    created = await crowdpoint_agent.agent.register_or_switch_wallet(
                         target_wallet_name,
                         public_did=True,
-                        mediator_agent=faber_agent.mediator_agent,
+                        mediator_agent=crowdpoint_agent.mediator_agent,
                     )
                 # create a schema and cred def for the new wallet
                 # TODO check first in case we are switching between existing wallets
                 if created:
                     # TODO this fails because the new wallet doesn't get a public DID
-                    await faber_agent.create_schema_and_cred_def(
-                        schema_name=faber_schema_name,
-                        schema_attrs=faber_schema_attrs,
+                    await crowdpoint_agent.create_schema_and_cred_def(
+                        schema_name=crowdpoint_schema_name,
+                        schema_attrs=crowdpoint_schema_attrs,
                     )
 
             elif option in "tT":
@@ -238,7 +238,7 @@ async def main(args):
                 log_status("#13 Issue credential offer to X")
 
                 # TODO define attributes to send for credential
-                faber_agent.agent.cred_attrs[faber_agent.cred_def_id] = {
+                crowdpoint_agent.agent.cred_attrs[crowdpoint_agent.cred_def_id] = {
                     "name": "Alice Smith",
                     "date": "2018-05-28",
                     "degree": "Maths",
@@ -250,20 +250,20 @@ async def main(args):
                     "@type": CRED_PREVIEW_TYPE,
                     "attributes": [
                         {"name": n, "value": v}
-                        for (n, v) in faber_agent.agent.cred_attrs[
-                            faber_agent.cred_def_id
+                        for (n, v) in crowdpoint_agent.agent.cred_attrs[
+                            crowdpoint_agent.cred_def_id
                         ].items()
                     ],
                 }
                 offer_request = {
-                    "connection_id": faber_agent.agent.connection_id,
-                    "comment": f"Offer on cred def id {faber_agent.cred_def_id}",
+                    "connection_id": crowdpoint_agent.agent.connection_id,
+                    "comment": f"Offer on cred def id {crowdpoint_agent.cred_def_id}",
                     "auto_remove": False,
                     "credential_preview": cred_preview,
-                    "filter": {"indy": {"cred_def_id": faber_agent.cred_def_id}},
+                    "filter": {"indy": {"cred_def_id": crowdpoint_agent.cred_def_id}},
                     "trace": exchange_tracing,
                 }
-                await faber_agent.agent.admin_POST(
+                await crowdpoint_agent.agent.admin_POST(
                     "/issue-credential-2.0/send-offer", offer_request
                 )
                 # TODO issue an additional credential for Student ID
@@ -273,18 +273,18 @@ async def main(args):
                 req_attrs = [
                     {
                         "name": "name",
-                        "restrictions": [{"schema_name": faber_schema_name}],
+                        "restrictions": [{"schema_name": crowdpoint_schema_name}],
                     },
                     {
                         "name": "date",
-                        "restrictions": [{"schema_name": faber_schema_name}],
+                        "restrictions": [{"schema_name": crowdpoint_schema_name}],
                     },
                 ]
-                if faber_agent.revocation:
+                if crowdpoint_agent.revocation:
                     req_attrs.append(
                         {
                             "name": "degree",
-                            "restrictions": [{"schema_name": faber_schema_name}],
+                            "restrictions": [{"schema_name": crowdpoint_schema_name}],
                             "non_revoked": {"to": int(time.time() - 1)},
                         },
                     )
@@ -292,7 +292,7 @@ async def main(args):
                     req_attrs.append(
                         {
                             "name": "degree",
-                            "restrictions": [{"schema_name": faber_schema_name}],
+                            "restrictions": [{"schema_name": crowdpoint_schema_name}],
                         }
                     )
                 if SELF_ATTESTED:
@@ -306,7 +306,7 @@ async def main(args):
                         "name": "age",
                         "p_type": ">=",
                         "p_value": 18,
-                        "restrictions": [{"schema_name": faber_schema_name}],
+                        "restrictions": [{"schema_name": crowdpoint_schema_name}],
                     }
                 ]
                 indy_proof_request = {
@@ -321,10 +321,10 @@ async def main(args):
                     },
                 }
 
-                if faber_agent.revocation:
+                if crowdpoint_agent.revocation:
                     indy_proof_request["non_revoked"] = {"to": int(time.time())}
                 proof_request_web_request = {
-                    "connection_id": faber_agent.agent.connection_id,
+                    "connection_id": crowdpoint_agent.agent.connection_id,
                     "presentation_request": {"indy": indy_proof_request},
                     "trace": exchange_tracing,
                 }
@@ -334,8 +334,8 @@ async def main(args):
 
             elif option == "3":
                 msg = await prompt("Enter message: ")
-                await faber_agent.agent.admin_POST(
-                    f"/connections/{faber_agent.agent.connection_id}/send-message",
+                await crowdpoint_agent.agent.admin_POST(
+                    f"/connections/{crowdpoint_agent.agent.connection_id}/send-message",
                     {"content": msg},
                 )
 
@@ -344,16 +344,16 @@ async def main(args):
                     "Creating a new invitation, please receive "
                     "and accept this invitation using Alice agent"
                 )
-                await faber_agent.generate_invitation(display_qr=True, wait=True)
+                await crowdpoint_agent.generate_invitation(display_qr=True, wait=True)
 
-            elif option == "5" and faber_agent.revocation:
+            elif option == "5" and crowdpoint_agent.revocation:
                 rev_reg_id = (await prompt("Enter revocation registry ID: ")).strip()
                 cred_rev_id = (await prompt("Enter credential revocation ID: ")).strip()
                 publish = (
                     await prompt("Publish now? [Y/N]: ", default="N")
                 ).strip() in "yY"
                 try:
-                    await faber_agent.agent.admin_POST(
+                    await crowdpoint_agent.agent.admin_POST(
                         "/revocation/revoke",
                         {
                             "rev_reg_id": rev_reg_id,
@@ -364,12 +364,12 @@ async def main(args):
                 except ClientError:
                     pass
 
-            elif option == "6" and faber_agent.revocation:
+            elif option == "6" and crowdpoint_agent.revocation:
                 try:
-                    resp = await faber_agent.agent.admin_POST(
+                    resp = await crowdpoint_agent.agent.admin_POST(
                         "/revocation/publish-revocations", {}
                     )
-                    faber_agent.agent.log(
+                    crowdpoint_agent.agent.log(
                         "Published revocations for {} revocation registr{} {}".format(
                             len(resp["rrid2crid"]),
                             "y" if len(resp["rrid2crid"]) == 1 else "ies",
@@ -379,14 +379,14 @@ async def main(args):
                 except ClientError:
                     pass
 
-        if faber_agent.show_timing:
-            timing = await faber_agent.agent.fetch_timing()
+        if crowdpoint_agent.show_timing:
+            timing = await crowdpoint_agent.agent.fetch_timing()
             if timing:
-                for line in faber_agent.agent.format_timing(timing):
+                for line in crowdpoint_agent.agent.format_timing(timing):
                     log_msg(line)
 
     finally:
-        terminated = await faber_agent.terminate()
+        terminated = await crowdpoint_agent.terminate()
 
     await asyncio.sleep(0.1)
 
@@ -395,7 +395,7 @@ async def main(args):
 
 
 if __name__ == "__main__":
-    parser = arg_parser(ident="faber", port=8020)
+    parser = arg_parser(ident="crowdpoint", port=8020)
     args = parser.parse_args()
 
     ENABLE_PYDEVD_PYCHARM = os.getenv("ENABLE_PYDEVD_PYCHARM", "").lower()
@@ -413,7 +413,7 @@ if __name__ == "__main__":
             import pydevd_pycharm
 
             print(
-                "Faber remote debugging to "
+                "Crowdpoint remote debugging to "
                 f"{PYDEVD_PYCHARM_HOST}:{PYDEVD_PYCHARM_CONTROLLER_PORT}"
             )
             pydevd_pycharm.settrace(
