@@ -1,4 +1,4 @@
 FROM mustafahusain/hyperledger-areas-agent:latest
 
 # Add Agent file
-COPY runner/crowdpoint.py ./demo/
+COPY runner/crowdpoint.py ./demo/crowdpoint.py
