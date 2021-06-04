@@ -139,13 +139,13 @@ async def main(start_port: int, no_auto: bool = False, show_timing: bool = False
         await agent.listen_webhooks(start_port + 2)
         await agent.register_did()
 
-        with log_status("Startup duration:"):
+        with log_timer("Startup duration:"):
             await agent.start_process()
-        log_status("Admin url is at:", agent.admin_url)
-        log_status("Endpoint url is at:", agent.endpoint)
+        log_msg("Admin url is at:", agent.admin_url)
+        log_msg("Endpoint url is at:", agent.endpoint)
 
         # Create a schema
-        with log_status("Publish schema/cred def duration:"):
+        with log_timer("Publish schema/cred def duration:"):
             log_status("#3/4 Create a new schema/cred def on the ledger")
             version = format(
                 "%d.%d.%d"
