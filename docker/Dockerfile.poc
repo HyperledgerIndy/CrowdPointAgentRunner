@@ -2,3 +2,5 @@ FROM mustafahusain/hyperledger-areas-agent:latest
 
 # Add Agent file
 COPY runner/crowdpoint.py ./demo/runners/crowdpoint.py
+
+#
