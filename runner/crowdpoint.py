@@ -159,23 +159,57 @@ async def main(start_port: int, no_auto: bool = False, show_timing: bool = False
                 _,  # schema id
                 credential_definition_id,
             ) = await agent.register_schema_and_creddef(
-                "crowdpoint schema", version, ["profile_id", "profile_sigma_id", "person_did", "person_title_name", "person_first_name", "person_middle_name", "person_last_name", "person_family_name", "person_name_suffix", "person_national_id_kind", "person_national_id_number", "person_date_of_birth", "person_gender"]
+                "crowdpoint schema", version, [
+                    "profile_id", 
+                    "profile_sigma_id", 
+                    "person_did", 
+                    "person_title_name", 
+                    "person_first_name", 
+                    "person_middle_name", 
+                    "person_last_name", 
+                    "person_family_name", 
+                    "person_name_suffix", 
+                    "person_national_id_kind", 
+                    "person_national_id_number", 
+                    "person_date_of_birth", 
+                    "person_gender",
+                    "person_primary_province_state",
+                    "person_primary_country",
+                    "person_primary_address_1",
+                    "person_primary_address_2",
+                    "person_primary_sector",
+                    "person_primary_city",
+                    "person_primary_region_county",
+                    "person_primary_postal_code",
+                    "person_primary_postal_4",
+                    "person_primary_gis",
+                    "person_primary_mobile",
+                    "person_primary_phone",
+                    "person_primary_ip_address",
+                    "person_primary_email",
+                    "person_primary_web_link",
+                    "person_primary_face_photo",
+                    "person_primary_kyc_status",
+                    "person_privacy_policy",
+                    "person_parent_sigma_id",
+                    "person_master_nft_id",
+                    "person_status",
+                    "timestamp"
+                    ]
             )
-
-        # TODO add an additional credential for Student ID
 
         with log_timer("Generate invitation duration:"):
             # Generate an invitation
             log_status(
                 "#5 Create a connection to alice and print out the invite details"
             )
-            connection = await agent.admin_POST("/connections/create-invitation")
+            # connection = await agent.admin_POST("/connections/create-invitation")
 
-        agent.connection_id = connection["connection_id"]
-        log_json(connection, label="Invitation response:")
-        log_msg("*****************")
-        log_msg(json.dumps(connection["invitation"]), label="Invitation:", color=None)
-        log_msg("*****************")
+        agent.connection_id = '' #connection["connection_id"]
+        # log_json(connection, label="Invitation response:")
+        # log_msg("*****************")
+        # log_msg(json.dumps(connection["invitation"]), label="Invitation:", color=None)
+        # log_msg("*****************")
 
         log_msg("Waiting for connection...")
         await agent.detect_connection()
