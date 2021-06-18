@@ -27,7 +27,7 @@ CRED_PREVIEW_TYPE = (
 LOGGER = logging.getLogger(__name__)
 
 
-class FaberAgent(DemoAgent):
+class CrowdPointAgent(DemoAgent):
     def __init__(
         self, http_port: int, admin_port: int, no_auto: bool = False, **kwargs
     ):
@@ -129,7 +129,7 @@ async def main(start_port: int, no_auto: bool = False, show_timing: bool = False
 
     try:
         log_status("#1 Provision an agent and wallet, get back configuration details")
-        agent = FaberAgent(
+        agent = CrowdPointAgent(
             start_port,
             start_port + 1,
             genesis_data=genesis,
@@ -201,7 +201,7 @@ async def main(start_port: int, no_auto: bool = False, show_timing: bool = False
         with log_timer("Generate invitation duration:"):
             # Generate an invitation
             log_status(
-                "#5 Create a connection to alice and print out the invite details"
+                "#5 Create a connection to CloudWallet and print out the invite details"
             )
             # connection = await agent.admin_POST("/connections/create-invitation")
 
@@ -226,10 +226,6 @@ async def main(start_port: int, no_auto: bool = False, show_timing: bool = False
 
                 # TODO define attributes to send for credential
                 agent.cred_attrs[credential_definition_id] = {
-                    "name": "Alice Smith",
-                    "date": "2018-05-28",
-                    "degree": "Maths",
-                    "age": "24",
                 }
 
                 cred_preview = {
@@ -250,7 +246,7 @@ async def main(start_port: int, no_auto: bool = False, show_timing: bool = False
                 # TODO issue an additional credential for Student ID
 
             elif option == "2":
-                log_status("#20 Request proof of degree from alice")
+                log_status("#20 Request proof")
                 req_attrs = [
                     {"name": "name", "restrictions": [{"issuer_did": agent.did}]},
                     {"name": "date", "restrictions": [{"issuer_did": agent.did}]},
@@ -315,7 +311,7 @@ async def main(start_port: int, no_auto: bool = False, show_timing: bool = False
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Runs a Faber demo agent.")
+    parser = argparse.ArgumentParser(description="Runs a CrowdPoint agent.")
     parser.add_argument("--no-auto", action="store_true", help="Disable auto issuance")
     parser.add_argument(
         "-p",

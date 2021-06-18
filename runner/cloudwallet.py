@@ -234,7 +234,7 @@ async def main(start_port: int, no_auto: bool = False, show_timing: bool = False
         log_msg("Admin url is at:", agent.admin_url)
         log_msg("Endpoint url is at:", agent.endpoint)
 
-        log_status("#9 Input faber.py invitation details")
+        log_status("#9 Input crowdpoint.py invitation details")
         await input_invitation(agent)
 
         async for option in prompt_loop(
