@@ -228,7 +228,6 @@ async def main(start_port: int, no_auto: bool = False, show_timing: bool = False
             timing=show_timing,
         )
         await agent.listen_webhooks(start_port + 2)
-        await agent.register_did()
 
         with log_timer("Startup duration:"):
             await agent.start_process()
