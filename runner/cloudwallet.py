@@ -235,7 +235,8 @@ async def main(start_port: int, no_auto: bool = False, show_timing: bool = False
         log_msg("Endpoint url is at:", agent.endpoint)
 
         log_status("#9 Input crowdpoint.py invitation details")
-        await input_invitation(agent)
+        # It terminates here... Mushi - commented
+        # await input_invitation(agent)
 
         async for option in prompt_loop(
             "(3) Send Message (4) Input New Invitation (X) Exit? [3/4/X]: "
