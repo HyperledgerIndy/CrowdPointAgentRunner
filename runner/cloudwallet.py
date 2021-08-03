@@ -240,28 +240,28 @@ async def main(start_port: int, no_auto: bool = False, show_timing: bool = False
         # It terminates here... Mushi - commented
         # await input_invitation(agent)
 
-        async for option in prompt_loop(
-            "(3) Send Message (4) Input New Invitation (X) Exit? [3/4/X]: "
-        ):
-            if option is None or option in "xX":
-                break
-            elif option == "3":
-                msg = await prompt("Enter message: ")
-                if msg:
-                    await agent.admin_POST(
-                        f"/connections/{agent.connection_id}/send-message",
-                        {"content": msg},
-                    )
-            elif option == "4":
-                # handle new invitation
-                log_status("Input new invitation details")
-                await input_invitation(agent)
+        # async for option in prompt_loop(
+        #     "(3) Send Message (4) Input New Invitation (X) Exit? [3/4/X]: "
+        # ):
+        #     if option is None or option in "xX":
+        #         break
+        #     elif option == "3":
+        #         msg = await prompt("Enter message: ")
+        #         if msg:
+        #             await agent.admin_POST(
+        #                 f"/connections/{agent.connection_id}/send-message",
+        #                 {"content": msg},
+        #             )
+        #     elif option == "4":
+        #         # handle new invitation
+        #         log_status("Input new invitation details")
+        #         await input_invitation(agent)
 
-        if show_timing:
-            timing = await agent.fetch_timing()
-            if timing:
-                for line in agent.format_timing(timing):
-                    log_msg(line)
+        # if show_timing:
+        #     timing = await agent.fetch_timing()
+        #     if timing:
+        #         for line in agent.format_timing(timing):
+        #             log_msg(line)
 
     finally:
         terminated = True
