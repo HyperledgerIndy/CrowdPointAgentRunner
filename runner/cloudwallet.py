@@ -235,6 +235,8 @@ async def main(start_port: int, no_auto: bool = False, show_timing: bool = False
         log_msg("Endpoint url is at:", agent.endpoint)
 
         log_status("#9 Input crowdpoint.py invitation details")
+        log_status("#9 ## Mushi changes here")
+
         # It terminates here... Mushi - commented
         # await input_invitation(agent)
 
